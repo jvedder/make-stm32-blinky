@@ -5,7 +5,7 @@
 TARGET  := blinky
 
 # BUILD_DIR is the buid output directory. Should start with ./
-BUILD_DIR := build
+BUILD_DIR := Build
 
 # SRC_DIRS is a list of source code directories. Must be a relative path.
 #SRC_DIRS  += .
@@ -26,8 +26,8 @@ LDSCRIPT = STM32F030R8TX_FLASH.ld
 
 # Compiler defines
 DEFS  += DEBUG
-DEFS  += DUSE_HAL_DRIVER
-DEFS  += DSTM32F030x8
+DEFS  += USE_HAL_DRIVER
+DEFS  += STM32F030x8
 
 # Target-specific compile flags
 ARCH_FLAGS  := -mthumb -mcpu=cortex-m4 -mfloat-abi=soft
@@ -71,11 +71,14 @@ SRC_FILES  += $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
 
 # Create list of object files in the build dir -- one for each soure file.
 # For example, main.c maps to build/main.c.o
-# OBJ_FILES := $(SRC_FILES:%=$(BUILD_DIR)/%.o)
-OBJ_FILES := $(addprefix $(BUILD_DIR)/,$(SRC_FILES:.c=.o))
+OBJ_FILES := $(SRC_FILES:%=$(BUILD_DIR)/%.o)
+#OBJ_FILES := $(addprefix $(BUILD_DIR)/,$(SRC_FILES:.c=.o))
 
 # Clear the implicit built in rules
 .SUFFIXES:
+
+BIN_DIR := C:/ST/STM32CubeIDE_1.6.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.win32_2.0.0.202105311346/tools/bin
+CC := $(BIN_DIR)/arm-none-eabi-gcc.exe
 
 # Default action depends on target file
 all: $(BUILD_DIR)/$(TARGET)
@@ -91,12 +94,18 @@ $(BUILD_DIR)/$(TARGET):$(OBJ_FILES)
 	@echo "Linker goes here:" $@
 
 # Compile all .c into .o
-$(BUILD_DIR)/%.o: %.c
+$(BUILD_DIR)/%.c.o: %.c
+	@echo "Compile .c into .o"
+	@echo "    " $<
+	@echo "    " $@
 	mkdir -p $(dir $@)
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
 # Compile all .s into .o
-$(BUILD_DIR)/%.o: %.s
+$(BUILD_DIR)/%.s.o: %.s
+	@echo "Compile .s into .o"
+	@echo "    " $<
+	@echo "    " $@
 	mkdir -p $(dir $@)
 	$(CC) $(LDFLAGS) $< -o $@ $(LOADLIBES) $(LDLIBS)
 

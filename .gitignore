@@ -4,6 +4,7 @@
 #ignore the build output folder
 Debug/
 Release/
+Build/
 
 #ignore the debug launch 
 *.launch
